@@ -1,6 +1,7 @@
 
 
 
+
 # rental nang
 
 # 목차
@@ -294,6 +295,10 @@ Transfer-Encoding: chunked
     "status": "Car Reservation OK!"
 }
 ```
+![rental](https://user-images.githubusercontent.com/87048557/131713297-b506b626-11bf-47ad-b86b-b24d3efa7582.jpeg)
+![rental mypage](https://user-images.githubusercontent.com/87048557/131713349-b6ab6162-ebc9-42a0-8fa1-22d6c88f7ed0.jpeg)
+![rental mypage cancel](https://user-images.githubusercontent.com/87048557/131713318-52f892f2-3b2b-4127-a4d9-f31e9510789e.jpeg)
+
 
 ## 동기식 호출 과 Fallback 처리
 
@@ -547,7 +552,7 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080
 Gateway는 LoadBalancer type으로 설정하고, 결과는 아래와 같다.
 ```
 
-![deploy01](https://user-images.githubusercontent.com/87048674/130167640-039e535c-a1de-4089-b7fc-2a6fe60141f5.png)
+![로드밸런서](https://user-images.githubusercontent.com/87048557/131713104-2d1156f2-e19e-462d-a5fb-9db8471fe3e1.jpeg)
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
@@ -631,9 +636,10 @@ kubectl apply -f /home/zn/rental/kubernetes/deployment_readiness_v1.yml
 
 - seige에서  Availability 가 100% 미만으로 떨어졌는지 확인
 
-![Readiness 1](https://user-images.githubusercontent.com/3106233/130053885-2bece799-de7e-44e4-b6eb-f588a0fd37e2.png)
+[레디니스 100미만1](https://user-images.githubusercontent.com/87048557/131712796-d9265475-ec5c-489b-8e77-83ce87bb86a1.jpeg)
+![레디니스 100미만2](https://user-images.githubusercontent.com/87048557/131712942-cf51d926-7975-426e-b1a1-498fef89241d.jpeg)
 
-배포기간중 Availability 가 평소 100%에서 90%대로 떨어지는 것을 확인. Kubernetes가 신규로 Deploy된 Microservice를 준비 상태로 인식해 서비스 수행했기 때문임.
+배포기간중 Availability 가 평소 100%에서 80%대로 떨어지는 것을 확인. Kubernetes가 신규로 Deploy된 Microservice를 준비 상태로 인식해 서비스 수행했기 때문임.
 방지를 위해 Readiness Probe 를 설정함:
 
 ```
@@ -643,7 +649,7 @@ kubectl apply -f kubernetes/deployment.yaml
 
 - 동일한 시나리오로 재배포 한 후 Availability 확인:
 
-![Readiness 2](https://user-images.githubusercontent.com/3106233/130053849-49de6039-299a-47fa-adde-dac3e114dab0.png)
+![레디니스 100](https://user-images.githubusercontent.com/87048557/131713004-48fe5eac-669f-4ba7-b6e3-a3e963053cc7.jpeg)
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
@@ -673,8 +679,7 @@ kubectl apply -f kubernetes/deployment.yaml
 
 RESTARTS 회수가 증가함.
 
-![Liveness](https://user-images.githubusercontent.com/3106233/130054276-24f98bd4-9481-47e0-bf23-a47ad074fb7f.png)
-
+![리브니스](https://user-images.githubusercontent.com/87048557/131712664-38388ef2-4fac-4d4a-94e2-d5500dcc0930.jpeg)!
 
 ## Persistence Volume
 신규로 생성한 EFS Storage에 Pod가 접근할 수 있도록 권한 및 서비스 설정.
