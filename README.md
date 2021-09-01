@@ -1,8 +1,8 @@
-# rental
+# rentalnang
 
 # 목차
 
-- [rental](#---)
+- [rentalnang](#---)
   - [서비스 시나리오](#서비스-시나리오)
   - [분석 설계](#분석-설계)
   - [구현](#구현)
@@ -21,7 +21,7 @@
     
 # 서비스 시나리오
 
-차량 예약 시스템인 rental의 기능적, 비기능적 요구사항은 다음과 같습니다. 사용자가 원하는 차량을 예약한 후 결제를 완료합니다. 담당자는 예약 내역을 확인한 후 확정합니다. 사용자는 예약 현황을 확인할 수 있습니다.
+차량 예약 시스템인 rentalnang의 기능적, 비기능적 요구사항은 다음과 같습니다. 사용자가 원하는 차량을 예약한 후 결제를 완료합니다. 담당자는 예약 내역을 확인한 후 확정합니다. 사용자는 예약 현황을 확인할 수 있습니다.
 
 기능적 요구사항
 
@@ -154,7 +154,7 @@ public class Rental {
 ```
 - Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
 ```
-package rental;
+package rentalnang;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -403,7 +403,7 @@ transfer-encoding: chunked
 - 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package rental;
+package rentalnang;
 
  ...
     @PostPersist
@@ -420,7 +420,7 @@ package rental;
 - 배송 서비스에서는 결제승인 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
-package rental;
+package rentalnang;
 
 ...
 
@@ -447,7 +447,7 @@ public class PolicyHandler{
 
 배송 시스템은 주문/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 배송시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
-# 배송 서비스 (reservation) 를 잠시 내려놓음 (ctrl+c)
+# 배송 서비스 (delivery) 를 잠시 내려놓음 (ctrl+c)
 
 #주문처리
 http localhost:8081/rentals carId="ddd" rentHour='1' status="rented"
