@@ -170,10 +170,10 @@ public interface PaymentHistoryRepository extends PagingAndSortingRepository<Pay
 http localhost:8081/rentals carId="aaa" rentHour='3' status="rented"
 
 # payment 서비스의 결제처리
-http localhost:8088/payments Id=1 rentHour='3'
+http localhost:8088/payments rentalId=1 rentHour='3'
 
 # delivery 서비스의 배송처리
-http localhost:8088/deliveries Id=1 status="delivered"
+http localhost:8088/deliveries rentalId=1 status="delivered"
 
 # 주문 상태 확인    
 http localhost:8081/rentals/1
@@ -269,27 +269,26 @@ CQRS 구현을 위해 고객의 예약 상황을 확인할 수 있는 Mypage를 
 
 ```
 # mypage 호출 
-http localhost:8081/mypages/12
+http localhost:8081/mypages/1
 
 HTTP/1.1 200 
 Content-Type: application/hal+json;charset=UTF-8
-Date: Wed, 18 Aug 2021 09:46:13 GMT
+Date: Thu, 26 Aug 2021 12:18:11 GMT
 Transfer-Encoding: chunked
 
 {
     "_links": {
         "mypage": {
-            "href": "http://localhost:8084/mypages/2"
+            "href": "http://localhost:8084/mypages/1"
         },
         "self": {
-            "href": "http://localhost:8084/mypages/2"
+            "href": "http://localhost:8084/mypages/1"
         }
     },
-    "cancellationId": null,
-    "name": "kim",
-    "orderId": 2,
-    "reservationId": 2,
-    "status": "Reservation Complete"
+    "rentalId": 1,
+    "carId": "bbb",
+    "rentHour": 4,
+    "status": "Car Reservation OK!"
 }
 ```
 
@@ -488,7 +487,6 @@ http localhost:8084/mypages     # 예약 상태가 "Car Reservation OK!"으로 �
                 "rentalId": 4,
                 "carId": "ddd",
                 "rentHour": 1,
-                "reservationId": null,
                 "status": "Car Reservation OK!"
             }
 ```
