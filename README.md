@@ -491,3 +491,234 @@ http localhost:8084/mypages     # 예약 상태가 "Car Reservation OK!"으로 �
             }
 ```
 
+# 운영
+
+## Deploy
+
+아래와 같은 순서로 AWS 사전 설정을 진행한다.
+```
+1) AWS IAM 설정
+2) EKC Cluster 생성	
+3) AWS 클러스터 토큰 가져오기
+4) Docker Start/Login 
+```
+이후 사전 설정이 완료된 상태에서 아래 배포 수행한다.
+```
+(1) rental build/push
+mvn package
+docker build -t 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnrental:v1 .
+docker push 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnrental:v1
+
+(2) delivery build/push
+mvn package
+docker build -t 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jndelivery:v1 .
+docker push 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jndelivery:v1
+
+(3) payment build/push
+mvn package
+docker build -t 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnpayment:v1 .
+docker push 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnpayment:v1
+
+(4) mypage build/push
+mvn package
+docker build -t 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnmypage:v1 .
+docker push 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnmypage:v1
+
+(5) gateway build/push
+mvn package
+docker build -t 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jngateway:v1 .
+docker push 184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jngateway:v1
+
+(6) 배포
+kubectl create deploy mypage --image=184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnmypage:v1
+kubectl create deploy gateway --image=184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jngateway:v1
+kubectl create deploy rental --image=184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnrental:v1
+kubectl create deploy payment --image=184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jnpayment:v1
+kubectl create deploy delivery --image=184714207239.dkr.ecr.ap-northeast-2.amazonaws.com/jndelivery:v1
+
+kubectl expose deploy mypage --type=ClusterIP --port=8080
+kubectl expose deploy rental --type=ClusterIP --port=8080
+kubectl expose deploy payment --type=ClusterIP --port=8080
+kubectl expose deploy delivery --type=ClusterIP --port=8080
+kubectl expose deploy gateway --type=LoadBalancer --port=8080
+Gateway는 LoadBalancer type으로 설정하고, 결과는 아래와 같다.
+```
+
+![deploy01](https://user-images.githubusercontent.com/87048674/130167640-039e535c-a1de-4089-b7fc-2a6fe60141f5.png)
+
+
+## 동기식 호출 / 서킷 브레이킹 / 장애격리
+
+## Circuit Breaker
+
+* Circuit Breaker 프레임워크의 선택: istio 사용하여 구현.
+
+시나리오는 주문(order) → 결제(payment) 시의 연결이 Request/Response 로 연동하여 구현이 되어있고, 주문 요청이 과도할 경우 CB 를 통하여 장애격리.
+
+- DestinationRule 를 생성하여 circuit break 가 발생할 수 있도록 설정 최소 connection pool 설정
+```
+# destination-rule.yaml
+
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: order
+spec:
+  host: order
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
+
+```
+
+- istio-injection 활성화
+
+![CB_setting](https://user-images.githubusercontent.com/3106233/130160176-c4905961-5a64-43d5-b925-ce7fabe82142.jpg)
+
+![CB_apply](https://user-images.githubusercontent.com/3106233/130160091-07a3ff17-5fd5-4175-b9e2-c2215b77a802.jpg)
+
+
+
+- 1명이 10초간 부하 발생하여 100% 정상처리 확인
+
+![CB_load_st_be](https://user-images.githubusercontent.com/3106233/130160213-a083edb3-b40b-4626-8f0d-5c5ff1956cba.jpg)
+
+
+- 10명이 10초간 부하 발생하여 82.05% 정상처리, 168건 실패 확인
+
+![CB_load_rs_af](https://user-images.githubusercontent.com/3106233/130160265-cc77b0de-1e8a-4713-af89-81011941c93d.jpg)
+
+
+운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
+
+
+
+### 오토스케일 아웃
+customer(mypage)에 대한 조회증가 시 replica 를 동적으로 늘려주도록 오토스케일아웃을 설정한다.
+
+- autoscaleout_customer.yaml에 resources 설정을 추가한다
+
+![autoscale_yaml](https://user-images.githubusercontent.com/3106233/130160306-ca9c2cf7-760e-4d28-841d-730d7061e96b.jpg)
+
+- customer 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 50프로를 넘어서면 replica 를 10개까지 늘려준다.
+
+![autoscale_setting](https://user-images.githubusercontent.com/3106233/130160324-7b392a52-cfd5-4125-8d2e-917848fd5d2c.jpg)
+
+- 부하를 동시사용자 100명으로 걸어준다.
+
+![autoscale_load_st](https://user-images.githubusercontent.com/3106233/130160336-098b0308-ed06-45a9-9217-f58e3b939a1b.jpg)
+
+- 모니터링 결과 스케일 아웃 정상작동을 확인할 수 있다.
+
+![autoscale_pod_inc](https://user-images.githubusercontent.com/3106233/130160357-ed15e5a3-8b63-4ce8-988f-ac5ea788d042.jpg)
+
+
+## 무정지 재배포 (Readiness)
+
+* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
+- mypage microservice v2 이미지를 생성해 deploy
+- 새 터미널에서 seige 로 배포작업 직전에 워크로드를 모니터링 함.
+- 새버전으로 배포
+
+```
+kubectl apply -f /home/zn/rental/kubernetes/deployment_readiness_v1.yml
+```
+
+- seige에서  Availability 가 100% 미만으로 떨어졌는지 확인
+
+![Readiness 1](https://user-images.githubusercontent.com/3106233/130053885-2bece799-de7e-44e4-b6eb-f588a0fd37e2.png)
+
+배포기간중 Availability 가 평소 100%에서 90%대로 떨어지는 것을 확인. Kubernetes가 신규로 Deploy된 Microservice를 준비 상태로 인식해 서비스 수행했기 때문임.
+방지를 위해 Readiness Probe 를 설정함:
+
+```
+# deployment.yaml 의 readiness probe 의 설정:
+kubectl apply -f kubernetes/deployment.yaml
+```
+
+- 동일한 시나리오로 재배포 한 후 Availability 확인:
+
+![Readiness 2](https://user-images.githubusercontent.com/3106233/130053849-49de6039-299a-47fa-adde-dac3e114dab0.png)
+
+배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
+
+## Liveness
+
+임의로 Pod의 Health check에 문제를 발생시키고, Liveness Probe가 Pod를 재기동하는지 확인
+
+```
+          args:
+          - /bin/sh
+          - -c
+          - touch /tmp/healthy; sleep 90; rm -rf /tmp/healthy; sleep 600
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            exec:
+              command:
+              - cat
+              - /tmp/healthy
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+```
+
+
+RESTARTS 회수가 증가함.
+
+![Liveness](https://user-images.githubusercontent.com/3106233/130054276-24f98bd4-9481-47e0-bf23-a47ad074fb7f.png)
+
+
+## Persistence Volume
+신규로 생성한 EFS Storage에 Pod가 접근할 수 있도록 권한 및 서비스 설정.
+
+1. EFS 생성: ClusterSharedNodeSecurityGroup 선택
+![efs01](https://user-images.githubusercontent.com/87048674/130165815-d22091e6-57a9-444a-ba15-320d44884302.png)
+![efs02](https://user-images.githubusercontent.com/87048674/130166013-1489c1b8-e4eb-4af1-9199-8f66ded06919.png)
+![efs03](https://user-images.githubusercontent.com/87048674/130166020-c091a1f8-c137-45b7-9fc8-4b2f582b7bbe.png)
+
+2. EFS계정 생성 및 Role 바인딩
+```
+- ServerAccount 생성
+kubectl apply -f efs-sa.yml
+kubectl get ServiceAccount efs-provisioner -n rental
+
+
+-SA(efs-provisioner)에 권한(rbac) 설정
+kubectl apply -f efs-rbac.yaml
+
+# efs-provisioner-deploy.yml 파일 수정
+value: fs-941997f4
+value: ap-northeast-2
+server: fs-941997f4.efs.ap-northeast-2.amazonaws.com
+```
+
+3. EFS provisioner 설치
+```
+kubectl apply -f efs-provisioner-deploy.yml
+kubectl get Deployment efs-provisioner -n rental
+```
+
+4. EFS storageclass 생성
+```
+kubectl apply -f efs-storageclass.yaml
+kubectl get sc aws-efs -n rental
+```
+
+5. PVC 생성
+```
+kubectl apply -f volume-pvc.yml
+kubectl get pvc -n rental
+```
+
+6. Create Pod with PersistentVolumeClaim
+```
+kubectl apply -f pod-with-pvc.yaml
+```
+- df-k로 EFS에 접근 가능
+
+![Volume](https://user-images.githubusercontent.com/3106233/130055195-aea654fa-d7df-4df8-9c57-53343f4e06ab.png)
