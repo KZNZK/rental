@@ -1,3 +1,4 @@
+
 # rental nang
 
 # 목차
@@ -677,9 +678,7 @@ RESTARTS 회수가 증가함.
 신규로 생성한 EFS Storage에 Pod가 접근할 수 있도록 권한 및 서비스 설정.
 
 1. EFS 생성: ClusterSharedNodeSecurityGroup 선택
-![efs01](https://user-images.githubusercontent.com/87048674/130165815-d22091e6-57a9-444a-ba15-320d44884302.png)
-![efs02](https://user-images.githubusercontent.com/87048674/130166013-1489c1b8-e4eb-4af1-9199-8f66ded06919.png)
-![efs03](https://user-images.githubusercontent.com/87048674/130166020-c091a1f8-c137-45b7-9fc8-4b2f582b7bbe.png)
+![efs2](https://user-images.githubusercontent.com/87048557/131711600-bb9f420e-55ed-468b-ad8e-acb073137297.jpg)
 
 2. EFS계정 생성 및 Role 바인딩
 ```
