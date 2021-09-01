@@ -636,7 +636,7 @@ kubectl apply -f /home/zn/rental/kubernetes/deployment_readiness_v1.yml
 
 - seige에서  Availability 가 100% 미만으로 떨어졌는지 확인
 
-[레디니스 100미만1](https://user-images.githubusercontent.com/87048557/131712796-d9265475-ec5c-489b-8e77-83ce87bb86a1.jpeg)
+![레디니스 100미만1](https://user-images.githubusercontent.com/87048557/131712796-d9265475-ec5c-489b-8e77-83ce87bb86a1.jpeg)
 ![레디니스 100미만2](https://user-images.githubusercontent.com/87048557/131712942-cf51d926-7975-426e-b1a1-498fef89241d.jpeg)
 
 배포기간중 Availability 가 평소 100%에서 80%대로 떨어지는 것을 확인. Kubernetes가 신규로 Deploy된 Microservice를 준비 상태로 인식해 서비스 수행했기 때문임.
