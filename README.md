@@ -1,4 +1,6 @@
 
+
+
 # rental nang
 
 # 목차
@@ -679,6 +681,7 @@ RESTARTS 회수가 증가함.
 
 1. EFS 생성: ClusterSharedNodeSecurityGroup 선택
 ![efs2](https://user-images.githubusercontent.com/87048557/131711600-bb9f420e-55ed-468b-ad8e-acb073137297.jpg)
+![efs3](https://user-images.githubusercontent.com/87048557/131712185-f341ad69-cfc2-4fc8-9c6d-f542bfb55470.jpg)
 
 2. EFS계정 생성 및 Role 바인딩
 ```
@@ -720,4 +723,4 @@ kubectl apply -f pod-with-pvc.yaml
 ```
 - df-k로 EFS에 접근 가능
 
-![Volume](https://user-images.githubusercontent.com/3106233/130055195-aea654fa-d7df-4df8-9c57-53343f4e06ab.png)
+![efs1](https://user-images.githubusercontent.com/87048557/131712284-c7623cd7-6f30-4bef-b813-2351dc8e7a50.jpeg)
