@@ -1,4 +1,4 @@
-# rentalnang
+# rental nang
 
 # 목차
 
