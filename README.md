@@ -44,7 +44,8 @@
 
 # 분석 설계
 ## Event Storming
-
+- url: http://labs.msaez.io/#/storming/14I3l4qQfFdMB05mt09LT7eVkZm2/3a93bec797980cdd24da8cdaa7f7e5e1
+- 
 - MSAEZ에서 Event Storming 수행
 - Event 도출
 ![6](https://user-images.githubusercontent.com/87048557/131800402-c1bc6eaa-e584-4f8f-b614-9138ca8aa2cd.jpg)
@@ -587,14 +588,12 @@ spec:
 ![istio2](https://user-images.githubusercontent.com/87048557/131777879-9e303c54-72bd-4e78-b452-2130779f58dc.jpg)
 
 - 1명이 10초간 부하 발생하여 100% 정상처리 확인
+![istio4](https://user-images.githubusercontent.com/87048557/131805798-ca4a06d8-98f0-4941-985d-329616b6f852.jpg)
 
-![CB_load_st_be](https://user-images.githubusercontent.com/3106233/130160213-a083edb3-b40b-4626-8f0d-5c5ff1956cba.jpg)
 
-
-- 10명이 10초간 부하 발생하여 82.05% 정상처리, 168건 실패 확인
-
-![CB_load_rs_af](https://user-images.githubusercontent.com/3106233/130160265-cc77b0de-1e8a-4713-af89-81011941c93d.jpg)
-
+- 10명이 10초간 부하 발생하여 96% 정상처리, 46건 실패 확인
+![istio5](https://user-images.githubusercontent.com/87048557/131805869-2c623163-47db-4d98-8fcf-c15691759202.jpg)
+![istio6](https://user-images.githubusercontent.com/87048557/131805877-d3f492f4-bd37-4a2e-af70-137802221e07.jpg)
 
 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
 
@@ -676,3 +675,49 @@ kubectl apply -f kubernetes/deployment.yaml
 RESTARTS 회수가 증가함.
 
 ![리브니스](https://user-images.githubusercontent.com/87048557/131712664-38388ef2-4fac-4d4a-94e2-d5500dcc0930.jpeg)!
+
+## Persistence Volume
+
+EFS (Elastic File Storage) 를 신규로 생성한 후, Pod가 EFS에 접근할 수 있게 설정한다.
+
+- EFS 생성: ClusterSharedNodeSecurityGroup 선택
+- EFS계정 생성 및 Role 바인딩
+```
+- ServerAccount 생성
+kubectl apply -f efs-sa.yml
+kubectl get ServiceAccount efs-provisioner -n rental
+
+-SA(efs-provisioner)에 권한(rbac) 설정
+kubectl apply -f efs-rbac.yaml
+
+# efs-provisioner-deploy.yml 파일 수정
+value: fs-941997f4
+value: ap-northeast-2
+server: fs-941997f4.efs.ap-northeast-2.amazonaws.com
+```
+
+- EFS provisioner 설치
+```
+kubectl apply -f efs-provisioner-deploy.yml
+kubectl get Deployment efs-provisioner -n rental
+```
+
+- EFS storageclass 생성
+```
+kubectl apply -f efs-storageclass.yaml
+kubectl get sc aws-efs -n rental
+```
+
+- PVC 생성
+```
+kubectl apply -f volume-pvc.yml
+kubectl get pvc -n rental
+```
+
+- Create Pod with PersistentVolumeClaim
+```
+kubectl apply -f pod-with-pvc.yaml
+```
+
+- ls, pwd, df-k로 EFS에 접근 가능
+![10](https://user-images.githubusercontent.com/87048557/131805517-4f5a3d0c-735d-4d28-bbf0-9da05a548148.jpeg)
