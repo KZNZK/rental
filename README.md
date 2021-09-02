@@ -561,7 +561,7 @@ Gateway는 LoadBalancer type으로 설정하고, 결과는 아래와 같다.
 
 * Circuit Breaker 프레임워크의 선택: istio 사용하여 구현.
 
-시나리오는 주문(order) → 결제(payment) 시의 연결이 Request/Response 로 연동하여 구현이 되어있고, 주문 요청이 과도할 경우 CB 를 통하여 장애격리.
+시나리오는 주문(rental) → 결제(payment) 시의 연결이 Request/Response 로 연동하여 구현이 되어있고, 주문 요청이 과도할 경우 CB 를 통하여 장애격리.
 
 - DestinationRule 를 생성하여 circuit break 가 발생할 수 있도록 설정 최소 connection pool 설정
 ```
@@ -570,9 +570,9 @@ Gateway는 LoadBalancer type으로 설정하고, 결과는 아래와 같다.
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: order
+  name: rental
 spec:
-  host: order
+  host: rental
   trafficPolicy:
     connectionPool:
       http:
