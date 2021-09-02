@@ -603,7 +603,7 @@ spec:
 ### 오토스케일 아웃
 mypage에 대한 조회증가 시 replica 를 동적으로 늘려주도록 오토스케일아웃을 설정한다.
 
-- autoscaleout_customer.yaml에 resources 설정을 추가한다
+- autoscaleout_mypage.yaml에 resources 설정을 추가한다
 
 ![hpa5](https://user-images.githubusercontent.com/87048557/131786254-3b68cf2f-00b4-45db-a0b9-557f89fe5def.jpg)
 
