@@ -50,19 +50,19 @@
 
 
 - Actor, Command 부착
-
+![1](https://user-images.githubusercontent.com/87048557/131798730-d45d3e51-32b1-4fba-9dfa-5cf52e51c570.jpg)
 
 - Policy 부착
-
+![2](https://user-images.githubusercontent.com/87048557/131798747-9b37e2ea-ef95-4cd6-ad00-c3d41c52dc04.jpg)
 
 - Aggregate 부착
-
+![3](https://user-images.githubusercontent.com/87048557/131798759-fe5aad73-c74f-47c2-a3ef-e8e7828596fc.jpg)
 
 - View 추가 및 Bounded Context 묶기
-
+![4](https://user-images.githubusercontent.com/87048557/131798780-6124144d-592e-4c96-9f23-8d94ec305d2a.jpg)
 
 - 완성 모형: Pub/Sub, Req/Res 추가
-
+![5](https://user-images.githubusercontent.com/87048557/131798791-789a2df2-ca03-4a21-bbea-ca59fcc63398.jpg)
 
 기능적 요구사항 커버 여부 검증
 
