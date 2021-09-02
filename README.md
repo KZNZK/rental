@@ -583,11 +583,8 @@ spec:
 
 - istio-injection 활성화
 
-![CB_setting](https://user-images.githubusercontent.com/3106233/130160176-c4905961-5a64-43d5-b925-ce7fabe82142.jpg)
-
-![CB_apply](https://user-images.githubusercontent.com/3106233/130160091-07a3ff17-5fd5-4175-b9e2-c2215b77a802.jpg)
-
-
+![istio](https://user-images.githubusercontent.com/87048557/131777863-a9f4a2b8-6665-4ca8-b0ce-3917772b180a.jpg)
+![istio2](https://user-images.githubusercontent.com/87048557/131777879-9e303c54-72bd-4e78-b452-2130779f58dc.jpg)
 
 - 1명이 10초간 부하 발생하여 100% 정상처리 확인
 
