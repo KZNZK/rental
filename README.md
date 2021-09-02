@@ -601,24 +601,23 @@ spec:
 
 
 ### 오토스케일 아웃
-customer(mypage)에 대한 조회증가 시 replica 를 동적으로 늘려주도록 오토스케일아웃을 설정한다.
+mypage에 대한 조회증가 시 replica 를 동적으로 늘려주도록 오토스케일아웃을 설정한다.
 
 - autoscaleout_customer.yaml에 resources 설정을 추가한다
 
-![autoscale_yaml](https://user-images.githubusercontent.com/3106233/130160306-ca9c2cf7-760e-4d28-841d-730d7061e96b.jpg)
+![hpa5](https://user-images.githubusercontent.com/87048557/131786254-3b68cf2f-00b4-45db-a0b9-557f89fe5def.jpg)
 
-- customer 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 50프로를 넘어서면 replica 를 10개까지 늘려준다.
+- mypage 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 10프로를 넘어서면 replica 를 5개까지 늘려준다.
 
-![autoscale_setting](https://user-images.githubusercontent.com/3106233/130160324-7b392a52-cfd5-4125-8d2e-917848fd5d2c.jpg)
+![hpa3](https://user-images.githubusercontent.com/87048557/131786140-94ad00fa-1d28-4caa-8183-20be139d1314.jpg)
 
 - 부하를 동시사용자 100명으로 걸어준다.
 
-![autoscale_load_st](https://user-images.githubusercontent.com/3106233/130160336-098b0308-ed06-45a9-9217-f58e3b939a1b.jpg)
+![hpa1](https://user-images.githubusercontent.com/87048557/131786162-66ea00e0-e77a-478a-8306-2057fffe1d0d.jpg)
 
 - 모니터링 결과 스케일 아웃 정상작동을 확인할 수 있다.
 
-![autoscale_pod_inc](https://user-images.githubusercontent.com/3106233/130160357-ed15e5a3-8b63-4ce8-988f-ac5ea788d042.jpg)
-
+![hpa4](https://user-images.githubusercontent.com/87048557/131786183-7b87da45-b8ac-4745-ad7f-fd06364d65fd.jpg)
 
 ## 무정지 재배포 (Readiness)
 
