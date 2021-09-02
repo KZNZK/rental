@@ -724,5 +724,4 @@ kubectl get pvc -n rental
 kubectl apply -f pod-with-pvc.yaml
 ```
 - df-k로 EFS에 접근 가능
-
 ![efs1](https://user-images.githubusercontent.com/87048557/131712284-c7623cd7-6f30-4bef-b813-2351dc8e7a50.jpeg)
