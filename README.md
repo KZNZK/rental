@@ -47,7 +47,7 @@
 
 - MSAEZ에서 Event Storming 수행
 - Event 도출
-
+![6](https://user-images.githubusercontent.com/87048557/131800402-c1bc6eaa-e584-4f8f-b614-9138ca8aa2cd.jpg)
 
 - Actor, Command 부착
 ![1](https://user-images.githubusercontent.com/87048557/131798730-d45d3e51-32b1-4fba-9dfa-5cf52e51c570.jpg)
